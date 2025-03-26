@@ -24,9 +24,6 @@ function Rainbow(a){
 
 //
 
-const phi = (1+Math.sqrt(5))/2;   //goldener Schnitt
-const g = 2 * Math.PI*(1-(1/phi)) //goldener Winkel 
-
 class Vector2{
     constructor(x, y){
         this.x = x;
@@ -49,8 +46,10 @@ class Vector2{
 const r = 170;
 const y = Vector2.Euler(5/6*Math.PI).Scale(r);  //Mittelpunkt der anderen Stelle
 const x = Vector2.Euler(0).Scale(r);        //Mittelpunkt der Umkehrstelle
-const t = new Vector2(3, 2).Scale(r);       //Verschiebung
+const t = new Vector2(1.5, 1.5).Scale(r);       //Verschiebung
 const d = Math.sqrt(3)-1;                   //Dicke
+const phi = (1+Math.sqrt(5))/2;   //goldener Schnitt
+const g = 2 * Math.PI*(1-(1/phi)) //goldener Winkel 
 
 function Path(n){
 
@@ -132,8 +131,8 @@ function Update(){
     msg = document.getElementById("msg");
     number = document.getElementById("number");
     
-    diagram.setAttribute("width", 6 * r);
-    diagram.setAttribute("height", 5 * r);
+    diagram.setAttribute("width", 4 * r);
+    diagram.setAttribute("height", 4 * r);
 
     content = number.value;
     myNumber = parseInt(content);
@@ -154,7 +153,7 @@ function Update(){
         msg.innerHTML = " (:"
         msg.setAttribute("style", "color: lightgreen")
     } else if (myNumber > 15){
-        msg.innerHTML = " wird wahrscheinlich laggen /:"
+        msg.innerHTML = "probably laggy /:"
         msg.setAttribute("style", "color: pink")
         return;
     } else {

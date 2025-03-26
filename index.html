@@ -12,12 +12,15 @@
 
 <body>
 
-<div id = "inputs">
-    <label for="number">set number:</label>
-    <input type="text" id="number" onchange="Update()" value = "3">
-    <label id = "msg" for="number"></label>
+    <div id = "inputs">
+        <label for="number">number of sets: </label>
+        <input type="text" id="number" onchange="Update()" value = "3">
+        <label id = "msg" for="number"></label>
+    </div>
+    <div id="wrapper">
+    <svg id = "diagram"></svg>
+    </div>
 </div>
 
-<svg id = "diagram" width="500" height="500" style = "margin:20"></svg>
 </body>
 </html>
