@@ -1,23 +1,28 @@
 
+body{
+    background-color: rgb(30, 30, 30);
+    color: white;
+}
+
 .set{
     /*
     stroke: black;
     stroke-width: 3;
     */
+    opacity: 0.3;
     mix-blend-mode: screen;
 }
 
-/*
+
 .set:hover{
-    filter: brightness(50%);
+    opacity: 1;
 }
-*/
+
 
 #diagram{
     margin: 20px;
 }
 
-body{
-    background-color: rgb(30, 30, 30);
-    color: white;
+#inputs{
+    margin: 10px;
 }

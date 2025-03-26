@@ -1,4 +1,6 @@
 
+/* === Classes === */
+
 class Color{
     constructor(r, g, b, a){
         this.r = r;
@@ -16,14 +18,14 @@ function Rainbow(a){
         255 * (0.5 + 0.5 * Math.cos(a + (0/3) * Math.PI)),
         255 * (0.5 + 0.5 * Math.cos(a + (2/3) * Math.PI)),
         255 * (0.5 + 0.5 * Math.cos(a + (4/3) * Math.PI)),
-        0.3
+        1
     )
 }
 
 //
 
-const phi = (1+Math.sqrt(5))/2;  //goldener Schnitt
-const g = 2 * Math.PI*(1-(1/phi))    //goldener Winkel 
+const phi = (1+Math.sqrt(5))/2;   //goldener Schnitt
+const g = 2 * Math.PI*(1-(1/phi)) //goldener Winkel 
 
 class Vector2{
     constructor(x, y){
@@ -36,15 +38,19 @@ class Vector2{
     Add(v){
         return new Vector2(this.x + v.x, this.y + v.y);
     }
+    static Euler(a){
+        return new Vector2(Math.cos(a), Math.sin(a))
+    }
     static zero = new Vector2(0, 0);
 }
 
 //
 
 const r = 170;
-const x = new Vector2(1, 0).Scale(r);                     //Einheitsvektor x
-const y = new Vector2(-1/2, 1/2 * Math.sqrt(3)).Scale(r); //Einheitsvektor y
-const t = new Vector2(3, 2).Scale(r);                     //Verschiebungsvektor
+const y = Vector2.Euler(5/6*Math.PI).Scale(r);  //Mittelpunkt der anderen Stelle
+const x = Vector2.Euler(0).Scale(r);        //Mittelpunkt der Umkehrstelle
+const t = new Vector2(3, 2).Scale(r);       //Verschiebung
+const d = Math.sqrt(3)-1;                   //Dicke
 
 function Path(n){
 
@@ -52,15 +58,15 @@ function Path(n){
 
     switch(n){
         case 0:
-            center = t;
+            center = t.Add(Vector2.Euler(Math.PI/3).Scale(r));
             data = `M${center.x},${center.y}m${-r},0a${r},${r},0,1,0${r * 2},0 a${r},${r},0,1,0${-r * 2},0`;
             break;
         case 1:
-            center = t.Add(y);
+            center = t.Add(Vector2.Euler(0).Scale(r));
             data = `M${center.x},${center.y}m${-r},0a${r},${r},0,1,0${r * 2},0 a${r},${r},0,1,0${-r * 2},0`;
             break;
         case 2:
-            center = t.Add(y).Add(x);
+            center = t;
             data = `M${center.x},${center.y}m${-r},0a${r},${r},0,1,0${r * 2},0 a${r},${r},0,1,0${-r * 2},0`;
             break;
         default:
@@ -77,38 +83,40 @@ function Path(n){
 
             size = 1<<(n - 2);
             m = 0;
-            l = (2 * m + 1)/size;
+            l = 1-(((2 * m + 1)/size - 1) * d);
             vx = x.Scale(l).Add(t);
             vy = y.Scale(l).Add(t);
-            data = `M${Math.floor(vy.x)},${Math.floor(vy.y)}`;
+            data = `M${vy.x},${vy.y}`;
 
             for (i = 0; i < (size>>1); i++){
                 old_l = l;
-                m = up(m, size); l = (2 * m + 1)/size;
+                m = up(m, size);
+                l = 1-(((2 * m + 1)/size - 1) * d);
                 vx = x.Scale(l).Add(t);
                 vy = y.Scale(l).Add(t);
                 r0 = (l - old_l)*(r/2);
-                r1 = Math.floor(Math.abs(r0));
+                r1 = Math.abs(r0);
                 r2 = l * r
                 if (r0 < 0) dir = 1; else dir = 0;
 
                 data += `
-                    A${r1},${r1},0,0,${dir},${Math.floor(vy.x)},${Math.floor(vy.y)}
-                    A${r2},${r2},0,0,0,${Math.floor(vx.x)},${Math.floor(vx.y)}
+                    A${r1},${r1},0,0,${dir},${vy.x},${vy.y}
+                    A${r2},${r2},0,0,0,${vx.x},${vx.y}
                 `
 
                 old_l = l;
-                m = down(m, size); l = (2 * m + 1)/size;
+                m = down(m, size);
+                l = 1-(((2 * m + 1)/size - 1) * d);
                 vx = x.Scale(l).Add(t);
                 vy = y.Scale(l).Add(t);
                 r0 = (l - old_l)*(r/2);
-                r1 = Math.floor(Math.abs(r0));
+                r1 = Math.abs(r0);
                 r2 = l * r
                 if (r0 < 0) dir = 0; else dir = 1;
 
                 data += `
-                    A${r1},${r1},0,0,${dir},${Math.floor(vx.x)},${Math.floor(vx.y)}
-                    A${r2},${r2},0,0,1,${Math.floor(vy.x)},${Math.floor(vy.y)}
+                    A${r1},${r1},0,0,${dir},${vx.x},${vx.y}
+                    A${r2},${r2},0,0,1,${vy.x},${vy.y}
                 `
             }
     }
@@ -118,14 +126,14 @@ function Path(n){
 
 //
 
-const diagram = document.getElementById("diagram");
-const msg = document.getElementById("msg");
-const number = document.getElementById("number");
-
-diagram.setAttribute("width", 6 * r);
-diagram.setAttribute("height", 5 * r);
-
 function Update(){
+
+    diagram = document.getElementById("diagram");
+    msg = document.getElementById("msg");
+    number = document.getElementById("number");
+    
+    diagram.setAttribute("width", 6 * r);
+    diagram.setAttribute("height", 5 * r);
 
     content = number.value;
     myNumber = parseInt(content);
@@ -160,4 +168,8 @@ function Update(){
     }
 }
 
-Update();
+/* == main == */
+
+document.addEventListener('DOMContentLoaded', function() {
+    Update();
+}, false);
